@@ -9,6 +9,77 @@ bool check_value(T x) {
 	return x > 0 ? true : false;
 }
 
+class Compressor {
+private:
+	int Comp_id;
+	string Comp_name;
+	int Comp_number;
+	int Comp_inwork;
+	double Comp_efficiency;
+public:
+	Compressor(int id, string name, int number, int inwork, double eff) {
+		Comp_id = id;
+		Comp_name = name;
+		Comp_number = number;
+		Comp_inwork = inwork;
+		Comp_efficiency = eff;
+	}
+
+	void set_Compressor_param() {
+		while (!check_value(Comp_id) || !check_value(Comp_number))
+		{
+			cout << "Insert id\n";
+			cin >> Comp_id;
+			cout << "Insert Name\n";
+			cin >> Comp_name;
+			cout << "Insert number of compressors\n";
+			cin >> Comp_number;
+		}
+		do {
+			cout << "Insert number of working compressors\n";
+			cin >> Comp_inwork;
+		} while (Comp_inwork >= Comp_number);
+		do {
+			cout << "Insert efficiency\n";
+			cin >> Comp_efficiency;
+		} while (!check_value(Comp_efficiency) || Comp_efficiency >= 100);
+		cout << "Compressor created\n";
+	}
+
+	void get_Compressor_param() {
+		cout << "Compressor station id is " << Comp_id << endl;
+		cout << "Compressor station name is " << Comp_name << endl;
+		cout << "There are " << Comp_number << " compressors\n";
+		cout << Comp_inwork << " of them are operating\n";
+		cout << "Efficiency is " << Comp_efficiency << "%\n";
+	}
+
+	void save_to_file() {
+		ofstream fout;
+		fout.open("Compressor station №" + to_string(Comp_id) + ".txt", ios::out);
+		if (fout.is_open()) {
+			fout << Comp_id << endl << Comp_name << endl << Comp_number << endl << Comp_inwork <<endl << Comp_efficiency << endl;
+			fout.close();
+		}
+		cout << "Saved";
+	}
+
+	void load_from_file(int id) {
+		ifstream fin;
+		fin.open("Compressor station №" + to_string(id) + ".txt", ios::in);
+		if (fin.is_open()) {
+			fin >> Comp_id;
+			fin >> Comp_name;
+			fin >> Comp_number;
+			fin >> Comp_inwork;
+			fin >> Comp_efficiency;
+			fin.close();
+		}
+		cout << "Loaded";
+	}
+
+	~Compressor() {}
+};
 
 class Pipe
 {
@@ -102,10 +173,11 @@ public:
 
 int main() {
 	Pipe pipe(0,0,0,false);
-	//pipe.set_Pipe_param();
-	pipe.load_from_file(1);
-	pipe.change_repair();
-	pipe.get_Pipe_param();
-	//pipe.save_to_file();
+	Compressor comp(0, "default", 0, 0, 0);
+	//comp.set_Compressor_param();
+	comp.load_from_file(245345);
+	//pipe.change_repair();
+	comp.get_Compressor_param();
+	//comp.save_to_file();
 	return 0;
 }
