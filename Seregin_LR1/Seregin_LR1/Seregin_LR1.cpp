@@ -26,7 +26,7 @@ public:
 	}
 
 	void set_Compressor_param() {
-		while (!check_value(Comp_id) || !check_value(Comp_number))
+		do
 		{
 			cout << "Insert id\n";
 			cin >> Comp_id;
@@ -34,15 +34,15 @@ public:
 			cin >> Comp_name;
 			cout << "Insert number of compressors\n";
 			cin >> Comp_number;
-		}
+		} while (!check_value(Comp_id) || !check_value(Comp_number));
 		do {
 			cout << "Insert number of working compressors\n";
 			cin >> Comp_inwork;
-		} while (Comp_inwork >= Comp_number);
+		} while (Comp_inwork > Comp_number);
 		do {
 			cout << "Insert efficiency\n";
 			cin >> Comp_efficiency;
-		} while (!check_value(Comp_efficiency) || Comp_efficiency >= 100);
+		} while (!check_value(Comp_efficiency) || Comp_efficiency > 100);
 		cout << "Compressor created\n";
 	}
 
@@ -52,6 +52,16 @@ public:
 		cout << "There are " << Comp_number << " compressors\n";
 		cout << Comp_inwork << " of them are operating\n";
 		cout << "Efficiency is " << Comp_efficiency << "%\n";
+	}
+
+	void add_compressor() {
+		if (Comp_inwork + 1 <= Comp_number) Comp_inwork = Comp_inwork++;
+		else cout << "All compressors are working\n";
+	}
+
+	void subs_compressor() {
+		if (Comp_inwork - 1 >=0 ) Comp_inwork = Comp_inwork--;
+		else cout << "There are no working compressors \n";
 	}
 
 	void save_to_file() {
@@ -74,8 +84,9 @@ public:
 			fin >> Comp_inwork;
 			fin >> Comp_efficiency;
 			fin.close();
+			cout << "Loaded\n";
 		}
-		cout << "Loaded";
+		else cout << "Not found\n";
 	}
 
 	~Compressor() {}
@@ -102,7 +113,7 @@ public:
 	void set_Pipe_param() {
 		int repair;
 		bool is_correct;
-		while (!check_value(Pipe_id) || !check_value(Pipe_length) || !check_value(Pipe_diameter))
+		do
 		{
 			cout << "Insert id\n";
 			cin >> Pipe_id;
@@ -110,7 +121,7 @@ public:
 			cin >> Pipe_diameter;
 			cout << "Insert l\n";
 			cin >> Pipe_length;
-		}
+		} while (!check_value(Pipe_id) || !check_value(Pipe_length) || !check_value(Pipe_diameter));
 		
 		do {
 			cout << "Is pipe under repair?\n1.yes\n2.no\n";
@@ -164,20 +175,117 @@ public:
 			fin >> Pipe_length;
 			fin >> Is_under_repair;
 			fin.close();
+			cout << "Loaded\n";
 		}
-		cout << "Loaded";
+		else cout << "Not found\n";
 	}
 	
 	~Pipe() {}
 };
 
+void PrintMenu() {
+	cout << "1) Load Pipe from file\n";
+	cout << "2) Load Compressor station from file\n";
+	cout << "3) Create Pipe\n";
+	cout << "4) Create Compressor station\n";
+	cout << "5) Change current pipe status\n";
+	cout << "6) Print info\n";
+	cout << "7) Save  to file\n";
+	cout << "8) Change number of working compressors\n";
+	cout << "0) Exit\n";
+}
+
 int main() {
-	Pipe pipe(0,0,0,false);
-	Compressor comp(0, "default", 0, 0, 0);
-	//comp.set_Compressor_param();
-	comp.load_from_file(245345);
-	//pipe.change_repair();
-	comp.get_Compressor_param();
-	//comp.save_to_file();
-	return 0;
+	Pipe pipe(-1,0,0,false);
+	Compressor comp(-1, "default", 0, 0, 0);
+	int i;
+	int id;
+	while (1) {
+		PrintMenu();
+		cin >> i;
+		switch (i)
+		{
+		case 1:
+			cout << "Insert pipe id\n";
+			cin >> id;
+			pipe.load_from_file(id);
+			break;
+
+		case 2:
+			cout << "Insert compressor station id\n";
+			cin >> id;
+			comp.load_from_file(id);
+			break;
+
+		case 3:
+			pipe.set_Pipe_param();
+			break;
+		case 4:
+			comp.set_Compressor_param();
+			break;
+
+		case 5:
+			pipe.change_repair();
+			break;
+
+		case 6:
+			cout << "1) Print pipe info\n";
+			cout << "2) Print compressor station info\n";
+			cin >> i;
+			switch (i) {
+			case 1:
+				pipe.get_Pipe_param();
+				break;
+			case 2:
+				comp.get_Compressor_param();
+				break;
+			default:
+				cout << "Choose from existing commands\n";
+				break;
+			}
+			break;
+
+		case 7:
+			cout << "1) Save pipe\n";
+			cout << "2) Save compressor station\n";
+			cin >> i;
+			switch (i) {
+			case 1:
+				pipe.save_to_file();
+				break;
+			case 2:
+				comp.save_to_file();
+				break;
+			default:
+				cout << "Choose from existing commands\n";
+				break;
+			}
+			break;
+
+		case 8:
+			cout << "1) Turn on compressor\n";
+			cout << "2) Turn off compressor\n";
+			cin >> i;
+			switch (i) {
+			case 1:
+				comp.add_compressor();
+				break;
+			case 2:
+				comp.subs_compressor();
+				break;
+			default:
+				cout << "Choose from existing commands\n";
+				break;
+			}
+			break;
+
+		case 0:
+			return 0;
+
+		default:
+			cout << "Choose from existing commands\n";
+			break;
+		}
+		cout << endl << endl;
+	}
 }
