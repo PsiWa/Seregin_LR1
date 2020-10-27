@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include "Check_value.h"
 
 using namespace std;
@@ -12,6 +11,15 @@ private:
 	int Comp_inwork;
 	double Comp_efficiency;
 public:
+
+	CompressorStation() {
+		Comp_id = -1;
+		Comp_name = "default";
+		Comp_number = 0;
+		Comp_inwork = 0;
+		Comp_efficiency = 0;
+	}
+
 	CompressorStation(int id, string name, int number, int inwork, double eff) {
 		Comp_id = id;
 		Comp_name = name;
@@ -21,34 +29,22 @@ public:
 	}
 
 	void set_Compressor_param() {
-		do
-		{
-			cin.clear();
-			cin.ignore();
-			cout << "Insert id\n";
-			cin >> Comp_id;
-			cout << "Insert Name\n";
-			cin >> Comp_name;
-			cout << "Insert number of compressors\n";
-			cin >> Comp_number;
-		} while (cin.fail() || !check_value(Comp_id) || !check_value(Comp_number));
+		
+		cout << "Insert id\n";
+		Comp_id = check_valuei();
+		cout << "Insert Name\n";
+		cin >> Comp_name;
+		cout << "Insert number of compressors\n";
+		Comp_number = check_valuei();
 		do {
 			cout << "Insert number of working compressors\n";
-			cin >> Comp_inwork;
+			Comp_inwork = check_valuei();
 		} while (Comp_inwork > Comp_number);
 		do {
 			cout << "Insert efficiency\n";
-			cin >> Comp_efficiency;
-		} while (!check_value(Comp_efficiency) || Comp_efficiency > 100);
+			Comp_efficiency = check_valuei();
+		} while (Comp_efficiency > 100);
 		cout << "Compressor created\n";
-	}
-
-	void print_Compressor_param() {
-		cout << "Compressor station id is " << Comp_id << endl;
-		cout << "Compressor station name is " << Comp_name << endl;
-		cout << "There are " << Comp_number << " compressors\n";
-		cout << Comp_inwork << " of them are operating\n";
-		cout << "Efficiency is " << Comp_efficiency << "%\n";
 	}
 
 	void add_compressor() {
@@ -85,4 +81,5 @@ public:
 		else cout << "Not found\n";
 	}
 
+	friend ostream& operator<< (ostream& out, const CompressorStation& comp);
 };

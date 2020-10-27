@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include "Check_value.h"
 
 using namespace std;
@@ -15,6 +14,13 @@ private:
 
 public:
 
+	Pipe() {
+		Pipe_id = -1;
+		Pipe_diameter = 1;
+		Pipe_length = 1;
+		Is_under_repair = false;
+	}
+
 	Pipe(int id, int d, double l, bool repair) {
 		Pipe_id = id;
 		Pipe_diameter = d;
@@ -24,34 +30,23 @@ public:
 
 	void set_Pipe_param() {
 		int repair;
-		bool is_correct;
-		do
-		{
-			cin.clear();
-			cin.ignore();
-			cout << "Insert id\n";
-			cin >> Pipe_id;
-			cout << "Insert D\n";
-			cin >> Pipe_diameter;
-			cout << "Insert l\n";
-			cin >> Pipe_length;
-			cout << "Is pipe under repair?\n1.yes\n2.no\n(default - no)\n";
-			cin >> repair;
-			if (repair == 1) {
-				Is_under_repair = true;
-			}
-			else Is_under_repair = false;
-		} while (cin.fail() || !check_value(Pipe_id) || !check_value(Pipe_length) || !check_value(Pipe_diameter));
+		cout << "Insert id\n";
+		Pipe_id = check_valuei();
+		cout << "Insert D\n";
+		Pipe_diameter = check_valuei();
+		cout << "Insert l\n";
+		Pipe_length = check_valued();
+		cout << "Is pipe under repair?\n1.yes\n2.no\n(default - no)\n";
+		repair = check_valuei();
+		if (repair == 1) {
+			Is_under_repair = true;
+		}
+		else Is_under_repair = false;
 
 		cout << "Pipe created\n";
 	}
 
-	void print_Pipe_param() {
-		cout << "Pipe id is " << Pipe_id << endl;
-		cout << "Pipe diameter is " << Pipe_diameter << endl;
-		cout << "Pipe length is " << Pipe_length << endl;
-		cout << (Is_under_repair ? "!Pipe is under repair!" : "") << endl;
-	}
+	friend ostream& operator<< (ostream& out, const Pipe& pipe);
 
 	void change_repair() {
 		Is_under_repair = !Is_under_repair;

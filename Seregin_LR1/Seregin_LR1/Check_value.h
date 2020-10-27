@@ -1,7 +1,22 @@
 #pragma once
-#include <iostream>
+using namespace std;
 
-template <typename T>
-bool check_value(T x) {
-	return x > 0 ? true : false;
+int check_valuei() {
+	int x;
+	do {
+		cin.clear();
+		cin.ignore();
+		cin >> x;
+	} while (cin.fail() || x <= 0);
+	return x;
+}
+
+double check_valued() {
+	double x;
+	do {
+		cin.clear();
+		cin.ignore();
+		cin >> x;
+	} while (cin.fail() || x <= 0);
+	return x;
 }

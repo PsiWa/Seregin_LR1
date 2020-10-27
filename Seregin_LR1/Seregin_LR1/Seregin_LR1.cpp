@@ -7,6 +7,23 @@
 
 using namespace std;
 
+ostream& operator<< (ostream& out, const Pipe& pipe) {
+	out << "Pipe id is " << pipe.Pipe_id << endl;
+	out << "Pipe diameter is " << pipe.Pipe_diameter << endl;
+	out << "Pipe length is " << pipe.Pipe_length << endl;
+	out << (pipe.Is_under_repair ? "!Pipe is under repair!" : "") << endl;
+	return out;
+}
+
+ostream& operator<< (ostream& out, const CompressorStation& comp) {
+	out << "Compressor station id is " << comp.Comp_id << endl;
+	out << "Compressor station name is " << comp.Comp_name << endl;
+	out << "There are " << comp.Comp_number << " compressors\n";
+	out << comp.Comp_inwork << " of them are operating\n";
+	out << "Efficiency is " << comp.Comp_efficiency << "%\n";
+	return out;
+}
+
 void PrintMenu() {
 	cout << "1) Load Pipe from file\n";
 	cout << "2) Load Compressor station from file\n";
@@ -20,8 +37,8 @@ void PrintMenu() {
 }
 
 int main() {
-	Pipe pipe(-1, 0, 0, false);
-	CompressorStation comp(-1, "default", 0, 0, 0);
+	Pipe pipe;
+	CompressorStation comp;
 	int i;
 	while (1) {
 		PrintMenu();
@@ -53,10 +70,10 @@ int main() {
 			cin >> i;
 			switch (i) {
 			case 1:
-				pipe.print_Pipe_param();
+				cout << pipe;
 				break;
 			case 2:
-				comp.print_Compressor_param();
+				cout << comp;
 				break;
 			default:
 				cout << "Choose from existing commands\n";
