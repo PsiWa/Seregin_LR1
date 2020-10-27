@@ -141,6 +141,11 @@
   <ItemGroup>
     <ClCompile Include="Seregin_LR1.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Check_value.h" />
+    <ClInclude Include="CompressorStation.h" />
+    <ClInclude Include="Pipe.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
