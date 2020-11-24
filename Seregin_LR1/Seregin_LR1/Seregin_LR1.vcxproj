@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,12 +140,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CCS.cpp" />
+    <ClCompile Include="CPipe.cpp" />
     <ClCompile Include="Seregin_LR1.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CCS.h" />
     <ClInclude Include="Check_value.h" />
-    <ClInclude Include="CompressorStation.h" />
-    <ClInclude Include="Pipe.h" />
+    <ClInclude Include="CPipe.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
