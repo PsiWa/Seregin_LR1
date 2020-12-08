@@ -86,3 +86,8 @@ void CPipe::change_Pipe_param()
 	}
 	else Is_under_repair = false;
 }
+
+int CPipe::get_id()
+{
+	return Pipe_id;
+}

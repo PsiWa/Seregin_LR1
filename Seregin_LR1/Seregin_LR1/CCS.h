@@ -22,6 +22,7 @@ public:
 	void save_to_file(ofstream& fout);
 	void load_from_file(ifstream& fin);
 	void change_cs_param();
+	int get_id();
 	friend ostream& operator<< (ostream& out, const CCS& comp);
 	friend bool CheckCSByName(const CCS& comp, string str);
 	friend bool CheckCSByWorkshops(const CCS& comp, double percent);

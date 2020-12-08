@@ -28,5 +28,6 @@ public:
 	friend ostream& operator<< (ostream& out, const CPipe& pipe);
 	friend bool CheckPipeByRepairStatus(const CPipe& p, bool repair);
 	friend bool CheckPipeByName(const CPipe& p, string str);
+	int get_id();
 };
 

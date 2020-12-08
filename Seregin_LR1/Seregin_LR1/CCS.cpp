@@ -89,3 +89,8 @@ void CCS::change_cs_param()
 		Comp_efficiency = check_valuei();
 	} while (Comp_efficiency > 100);
 }
+
+int CCS::get_id()
+{
+	return Comp_id;
+}
