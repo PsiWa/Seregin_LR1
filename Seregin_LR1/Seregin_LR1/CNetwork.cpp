@@ -60,7 +60,6 @@ unordered_map<int, int> CNetwork::TopologicalSort()
 	list<int> copyofarcs = idofarcs;
 	list<int> copyofpeaks = idofpeaks;
 	list<int> arcstodelete;
-	list<int>::iterator iter;
 	while (copyofarcs.size() > 0)
 	{
 		for (auto& j : copyofpeaks) {
@@ -69,9 +68,7 @@ unordered_map<int, int> CNetwork::TopologicalSort()
 			for (auto& i : copyofarcs)
 			{
 				if (Incidence[i][j] == -1)
-				{
 					IsDeadEnd = false;
-				}
 			}
 			if (IsDeadEnd)
 			{
@@ -79,14 +76,10 @@ unordered_map<int, int> CNetwork::TopologicalSort()
 				for (auto& i: copyofarcs)
 				{
 					if (Incidence[i][j] == 1)
-					{
 						arcstodelete.push_back(i);
-					}
 				}
-				for (iter = arcstodelete.begin(); iter != arcstodelete.end(); iter++)
-				{
-					copyofarcs.erase(find(copyofarcs.begin(), copyofarcs.end(), *iter));
-				}
+				for (auto& i : arcstodelete)
+					copyofarcs.erase(find(copyofarcs.begin(), copyofarcs.end(), i));
 				copyofpeaks.erase(find(copyofpeaks.begin(), copyofpeaks.end(), j));
 				for (auto& i : copyofpeaks)
 					cout << i << " ";
