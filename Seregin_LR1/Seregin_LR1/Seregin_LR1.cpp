@@ -8,6 +8,7 @@
 #include "Check_value.h"
 #include "CCS.h"
 #include "CPipe.h"
+#include "CNetwork.h"
 #include <filesystem> // https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
 
 using namespace std::filesystem;
@@ -24,6 +25,7 @@ ostream& operator<< (ostream& out, const CCS& comp) {
 	out << comp.Comp_inwork << " of them are operating\n" << "Efficiency is " << comp.Comp_efficiency << "%\n";
 	return out;
 }
+
 
 void PrintMenu() {
 	cout << "////////////////////////////////////////\n"
@@ -118,6 +120,7 @@ int main() {
 	int size;
 	CPipe pipe;
 	CCS comp;
+	CNetwork network;
 	ofstream fout;
 	ifstream fin;
 	string line;
@@ -128,7 +131,6 @@ int main() {
 	unordered_map<int, CPipe> PipeMap;
 	unordered_map<int, CCS> CSMap;
 
-	unordered_map<int, unordered_map<int, int>> network;
 	unordered_map<int, unordered_map<int, int>>::iterator netiterator;
 
 	vector<unordered_map<int, unordered_map<int, int>>::iterator> todelete;
@@ -402,6 +404,7 @@ int main() {
 				while (CSMap.find(i = InBetween(-1, INT_MAX)) != CSMap.end())
 				{
 					CSMap.erase(CSMap.find(i));
+					cout << "Deleted" << endl;
 				}
 				break;
 			default:
@@ -410,65 +413,16 @@ int main() {
 			break;
 
 		case 11: //EDIT NETWORK
-			cout << "Create path using pipe:\n(ids of pipes: ";
-			for  (auto iter = PipeMap.begin(); iter != PipeMap.end();iter++)
-				cout << iter->first << " ";
-			cout << ")" << endl;
-			if (PipeMap.find(i = InBetween(0, INT_MAX)) != PipeMap.end())
-			{
-				cout << "From:\n(ids of CS: ";
-				for (auto iter = CSMap.begin(); iter != CSMap.end(); iter++)
-					cout << iter->first << " ";
-				cout << ")" << endl;
-				if (CSMap.find(j = InBetween(0, INT_MAX)) != CSMap.end())
-				{
-					network[i][j] = -1;
-					if (j > maxsize)
-						maxsize = j;
-				}
-				cout << "to:\n(ids of CS: ";
-				for (auto iter = CSMap.begin(); iter != CSMap.end(); iter++)
-					cout << iter->first << " ";
-				cout << ")" << endl;
-				if (CSMap.find(j = InBetween(0, INT_MAX)) != CSMap.end())
-				{
-					network[i][j] = 1;
-					if (j > maxsize)
-						maxsize = j;
-				}
-			}
 
-			/*for (auto iter1 = network.begin(); iter1 != network.end(); iter1++) {
-				cout << "l" << iter1->first << "| ";
-				for (auto iter2 = iter1->second.begin(); iter2 != iter1->second.end(); iter2++)
-					cout << "|v" << iter2->first << "|" << iter2->second << " ";
-				cout << endl;
-			}*/
-			/*maxsize = 0;
-			for (auto iter1 = network.begin(); iter1 != network.end(); iter1++) {
-				if (maxsize < iter1->second.size())
-					maxsize = iter1->second.size();
-			}
-			cout << maxsize << endl;*/
-
-			for (auto iter = network.begin(); iter != network.end(); iter++) {
-				for (int j = 1; j <= maxsize; j++)
-					if (iter->second[j] != 1 && iter->second[j] !=-1)
-						iter->second[j] = 0;
-			}
-
-			for (auto iter = network.begin(); iter != network.end(); iter++) {
-				for (int j = 1; j <= maxsize; j++)
-					cout << iter->second[j] << " ";
-				cout << endl;
-			}
+			network.AddPath(PipeMap, CSMap);
+			network.PrintIncidence();
 
 
 			break;
 
 
 		case 12:
-			found.clear();
+			/*found.clear();
 			while (network.size()>0)
 			{
 				for (int j = 1; j <= maxsize; j++) {
@@ -503,7 +457,7 @@ int main() {
 			for (auto& i : found)
 			{
 				cout << i << endl;
-			}
+			}*/
 			break;
 
 		case 0: // EXIT
