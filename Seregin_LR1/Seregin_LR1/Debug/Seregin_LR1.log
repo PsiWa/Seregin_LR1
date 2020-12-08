@@ -1,11 +1,2 @@
 ﻿  CNetwork.cpp
-  CPipe.cpp
-  Seregin_LR1.cpp
-C:\Users\fedor\OneDrive\Документы\GitHub\Seregin_LR1\Seregin_LR1\Seregin_LR1\Seregin_LR1.cpp(138,7): warning C4101: IsDeadEnd: неиспользованная локальная переменная
-C:\Users\fedor\OneDrive\Документы\GitHub\Seregin_LR1\Seregin_LR1\Seregin_LR1\Seregin_LR1.cpp(142,6): warning C4101: last: неиспользованная локальная переменная
-C:\Users\fedor\OneDrive\Документы\GitHub\Seregin_LR1\Seregin_LR1\Seregin_LR1\Seregin_LR1.cpp(127,8): warning C4101: j: неиспользованная локальная переменная
-C:\Users\fedor\OneDrive\Документы\GitHub\Seregin_LR1\Seregin_LR1\Seregin_LR1\Seregin_LR1.cpp(128,9): warning C4101: d: неиспользованная локальная переменная
-  Создание кода...
-C:\Users\fedor\OneDrive\Документы\GitHub\Seregin_LR1\Seregin_LR1\Seregin_LR1\Seregin_LR1.cpp(65): warning C4715: SelectOne<CPipe>: значение возвращается не при всех путях выполнения
-C:\Users\fedor\OneDrive\Документы\GitHub\Seregin_LR1\Seregin_LR1\Seregin_LR1\Seregin_LR1.cpp(65): warning C4715: SelectOne<CCS>: значение возвращается не при всех путях выполнения
   Seregin_LR1.vcxproj -> C:\Users\fedor\OneDrive\Документы\GitHub\Seregin_LR1\Seregin_LR1\Debug\Seregin_LR1.exe

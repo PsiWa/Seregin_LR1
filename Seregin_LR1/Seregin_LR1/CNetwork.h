@@ -5,6 +5,7 @@
 #include "CPipe.h"
 #include "CCS.h"
 #include "Check_value.h"
+#include <iterator>
 using namespace std;
 
 class CNetwork
@@ -17,6 +18,7 @@ private:
 public:
 	void AddPath(const unordered_map<int, CPipe>& pipes,const unordered_map<int, CCS>& CS);
 	void PrintIncidence();
+	unordered_map<int,int> TopologicalSort();
 
 };
 

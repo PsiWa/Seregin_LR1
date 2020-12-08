@@ -126,8 +126,9 @@ int main() {
 	string line;
 	int i,j;
 	double d;
-	vector<int> found;
-
+	vector<int> foundCS;
+	vector<int> foundPipes;
+	unordered_map<int, int> sorted;
 	unordered_map<int, CPipe> PipeMap;
 	unordered_map<int, CCS> CSMap;
 
@@ -263,8 +264,8 @@ int main() {
 				case 1:
 					cout << "Enter name token:" << endl;
 					cin >> line;
-					found = FindPipeByFilter<string>(PipeMap, CheckPipeByName, line);
-					for (auto& i : found)
+					foundPipes = FindPipeByFilter<string>(PipeMap, CheckPipeByName, line);
+					for (auto& i : foundPipes)
 					{
 						cout << i << ")\n" << PipeMap[i] << endl;
 					}
@@ -273,8 +274,8 @@ int main() {
 				case 2:
 					cout << "Choose status\n1)Not under repair\n2)Under repair" << endl;
 					cin >> i;
-					found = FindPipeByFilter(PipeMap, CheckPipeByRepairStatus, (bool)(i - 1));
-					for (auto& i : found)
+					foundPipes = FindPipeByFilter(PipeMap, CheckPipeByRepairStatus, (bool)(i - 1));
+					for (auto& i : foundPipes)
 					{
 						cout << i << ")\n" << PipeMap[i] << endl;
 					}
@@ -293,8 +294,8 @@ int main() {
 				case 1:
 					cout << "Enter name token:" << endl;
 					cin >> line;
-					found = FindCSByFilter(CSMap, CheckCSByName, line);
-					for (auto& i : found)
+					foundCS = FindCSByFilter(CSMap, CheckCSByName, line);
+					for (auto& i : foundCS)
 					{
 						cout << i << ")\n" << CSMap[i] << endl;
 					}
@@ -302,8 +303,8 @@ int main() {
 					break;
 				case 2:
 					cout << "Enter minimal percent of active workshops:" << endl;
-					found = FindCSByFilter(CSMap, CheckCSByWorkshops, InBetween(0.0, 100.0));
-					for (auto& i : found)
+					foundCS = FindCSByFilter(CSMap, CheckCSByWorkshops, InBetween(0.0, 100.0));
+					for (auto& i : foundCS)
 					{
 						cout << i << ")\n" << CSMap[i] << endl;
 					}
@@ -330,7 +331,7 @@ int main() {
 				switch (check_valuei())
 				{
 				case 1:
-					for (auto& i : found)
+					for (auto& i : foundPipes)
 					{
 						cout << i << ")\n" << PipeMap[i] << endl;
 						PipeMap[i].change_Pipe_param();
@@ -357,7 +358,7 @@ int main() {
 				switch (check_valuei())
 				{
 				case 1:
-					for (auto& i : found)
+					for (auto& i : foundCS)
 					{
 						cout << i + 1 << ")\n" << CSMap[i] << endl;
 						CSMap[i].change_cs_param();
@@ -366,7 +367,6 @@ int main() {
 					break;
 				case 2:
 					cout << "Write the numbers of elements you want to edit. Type 0 to stop" << endl;
-					found.clear();
 					while (CSMap.find(i = check_valuei()) != CSMap.end())
 					{
 						cout << i << ")\n" << CSMap[i] << endl;
@@ -388,7 +388,7 @@ int main() {
 			break;
 
 		case 10: // DELETE
-			cout << "What do you want to edit? \n1)Pipes\n2)Compressor Stations" << endl;
+			cout << "What do you want to delete? \n1)Pipes\n2)Compressor Stations" << endl;
 			switch (check_valuei())
 			{
 			case 1:
@@ -413,51 +413,16 @@ int main() {
 			break;
 
 		case 11: //EDIT NETWORK
-
 			network.AddPath(PipeMap, CSMap);
 			network.PrintIncidence();
 
-
 			break;
 
-
 		case 12:
-			/*found.clear();
-			while (network.size()>0)
-			{
-				for (int j = 1; j <= maxsize; j++) {
-					IsDeadEnd = true;
-					for (auto iter = network.begin(); iter != network.end(); iter++)
-					{
-						if (iter->second[j] == -1)
-						{
-							IsDeadEnd = false;
-							if (network.size() == 1)
-								last = j;
-						}
-					}
-					if (IsDeadEnd)
-					{
-						netiterator = network.begin();
-						for (auto iter = network.begin(); iter != network.end(); iter++)
-						{
-							if (iter->second[j] == 1)
-							{
-								found.push_back(j);
-								todelete.push_back(iter);
-							}
-						}
-						
-					}
-				}
-				for (auto& i : todelete)
-					network.erase(i);
-			}
-			found.push_back(last);
-			for (auto& i : found)
-			{
-				cout << i << endl;
-			}*/
+			sorted = network.TopologicalSort();
+			for (auto& i : sorted)
+				cout << i.first << ")" << i.second << " ";
+			cout << endl;
 			break;
 
 		case 0: // EXIT

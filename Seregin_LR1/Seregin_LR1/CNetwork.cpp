@@ -2,7 +2,7 @@
 
 void CNetwork::AddPath(const unordered_map<int, CPipe>& pipes,const unordered_map<int, CCS>& CS)
 {
-	unsigned int i, j;
+	unsigned int i, js, jf;
 	cout << "Create path using pipe:\n(ids of pipes: ";
 	for (auto& p : pipes)
 	{
@@ -12,27 +12,29 @@ void CNetwork::AddPath(const unordered_map<int, CPipe>& pipes,const unordered_ma
 	cout << ")" << endl;
 	if (pipes.find(i = InBetween(0, INT_MAX)) != pipes.end() && idofarcs.end() == find(idofarcs.begin(), idofarcs.end(), i))
 	{
-		idofarcs.push_back(i);
 		cout << "From:\n(ids of CS: ";
 		for (auto& c: CS)
 			cout << c.first << " ";
 		cout << ")" << endl;
-		if (CS.find(j = InBetween(0, INT_MAX)) != CS.end())
+		if (CS.find(js = InBetween(0, INT_MAX)) != CS.end())
 		{
-			if (idofpeaks.end() == find(idofpeaks.begin(), idofpeaks.end(), j))
-				idofpeaks.push_back(j);
-			Incidence[i][j] = -1;
+			cout << "to:\n(ids of CS: ";
+			for (auto& c : CS)
+				cout << c.first << " ";
+			cout << ")" << endl;
+			if (CS.find(jf = InBetween(0, INT_MAX)) != CS.end() && jf != js)
+			{
+				idofarcs.push_back(i);
+				if (idofpeaks.end() == find(idofpeaks.begin(), idofpeaks.end(), js))
+					idofpeaks.push_back(js);
+				if (idofpeaks.end() == find(idofpeaks.begin(), idofpeaks.end(), jf))
+					idofpeaks.push_back(jf);
+				Incidence[i][js] = -1;
+				Incidence[i][jf] = 1;
+			}
+			else cout << "You can't make a loop" << endl;
 		}
-		cout << "to:\n(ids of CS: ";
-		for (auto& c : CS)
-			cout << c.first << " ";
-		cout << ")" << endl;
-		if (CS.find(j = InBetween(0, INT_MAX)) != CS.end())
-		{
-			if (idofpeaks.end() == find(idofpeaks.begin(), idofpeaks.end(), j))
-				idofpeaks.push_back(j);
-			Incidence[i][j] = 1;
-		}
+		else cout << "There is no such CS" << endl;
 	}
 	else cout << "You cant use this pipe!\nIt isn't created or already used" << endl;
 }
@@ -48,4 +50,52 @@ void CNetwork::PrintIncidence()
 		}
 		cout << endl;
 	}
+}
+
+unordered_map<int, int> CNetwork::TopologicalSort()
+{
+	bool IsDeadEnd;
+	unordered_map<int, int> sort;
+	int number = idofpeaks.size();
+	list<int> copyofarcs = idofarcs;
+	list<int> copyofpeaks = idofpeaks;
+	list<int> arcstodelete;
+	list<int>::iterator iter;
+	while (copyofarcs.size() > 0)
+	{
+		for (auto& j : copyofpeaks) {
+			IsDeadEnd = true;
+			arcstodelete.clear();
+			for (auto& i : copyofarcs)
+			{
+				if (Incidence[i][j] == -1)
+				{
+					IsDeadEnd = false;
+				}
+			}
+			if (IsDeadEnd)
+			{
+				sort[number--] = j;
+				for (auto& i: copyofarcs)
+				{
+					if (Incidence[i][j] == 1)
+					{
+						arcstodelete.push_back(i);
+					}
+				}
+				for (iter = arcstodelete.begin(); iter != arcstodelete.end(); iter++)
+				{
+					copyofarcs.erase(find(copyofarcs.begin(), copyofarcs.end(), *iter));
+				}
+				copyofpeaks.erase(find(copyofpeaks.begin(), copyofpeaks.end(), j));
+				for (auto& i : copyofpeaks)
+					cout << i << " ";
+				cout << endl;
+				break;
+			}
+		}
+	}
+	for (auto& i : copyofpeaks)
+		sort[number--] = i;
+	return sort;
 }
