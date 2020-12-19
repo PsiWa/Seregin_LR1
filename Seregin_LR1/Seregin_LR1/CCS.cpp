@@ -20,28 +20,6 @@ CCS::CCS(int id, string name, int number, int inwork, double eff)
 	Comp_efficiency = eff;
 }
 
-void CCS::set_Compressor_param()
-{
-	string str;
-	//cout << "Insert id\n";
-	Comp_id = MaxID++;
-	cout << "Insert Name\n";
-	cin.ignore();
-	getline(cin, str);
-	if (str == "") Comp_name = "nameless";
-	else Comp_name = str;
-	cout << "Insert number of workshops\n";
-	Comp_number = check_valuei();
-	do {
-		cout << "Insert number of active workshops\n";
-		Comp_inwork = check_valuei();
-	} while (Comp_inwork > Comp_number);
-	do {
-		cout << "Insert efficiency\n";
-		Comp_efficiency = check_valuei();
-	} while (Comp_efficiency > 100);
-	cout << "Compressor station created\n";
-}
 
 void CCS::add_compressor()
 {
@@ -94,3 +72,14 @@ int CCS::get_id()
 {
 	return Comp_id;
 }
+
+void CCS::setMaxID(int i)
+{
+	CCS::MaxID = i;
+}
+
+int CCS::getMaxID()
+{
+	return CCS::MaxID;
+}
+

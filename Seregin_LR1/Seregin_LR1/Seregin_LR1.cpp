@@ -20,12 +20,59 @@ ostream& operator<< (ostream& out, const CPipe& pipe) {
 	return out;
 }
 
+istream& operator>> (istream& in, CPipe& pipe)
+{
+	int repair;
+	string str;
+	//cout << "Insert id\n";
+	pipe.Pipe_id = CPipe::MaxID++;
+	cout << "Insert Name\n";
+	cin.ignore();
+	getline(cin, str);
+	if (str == "") pipe.Pipe_name = "nameless";
+	else pipe.Pipe_name = str;
+	cout << "Insert D\n";
+	pipe.Pipe_diameter = check_valuei();
+	cout << "Insert l\n";
+	pipe.Pipe_length = check_valued();
+	cout << "Is pipe under repair?\n1.yes\n2.no\n(default - no)\n";
+	repair = check_valuei();
+	if (repair == 1) {
+		pipe.Is_under_repair = true;
+	}
+	else pipe.Is_under_repair = false;
+	cout << "Pipe created\n";
+	return in;
+}
+
 ostream& operator<< (ostream& out, const CCS& comp) {
 	out << "Compressor station id is " << comp.Comp_id << endl << "Compressor station name is " << comp.Comp_name <<endl << "There are " << comp.Comp_number << " workshops" << endl;
 	out << comp.Comp_inwork << " of them are operating\n" << "Efficiency is " << comp.Comp_efficiency << "%\n";
 	return out;
 }
 
+istream& operator>> (istream& in, CCS& comp)
+{
+	string str;
+	comp.Comp_id = CCS::MaxID++;
+	cout << "Insert Name\n";
+	cin.ignore();
+	getline(cin, str);
+	if (str == "") comp.Comp_name = "nameless";
+	else comp.Comp_name = str;
+	cout << "Insert number of workshops\n";
+	comp.Comp_number = check_valuei();
+	do {
+		cout << "Insert number of active workshops\n";
+		comp.Comp_inwork = check_valuei();
+	} while (comp.Comp_inwork > comp.Comp_number);
+	do {
+		cout << "Insert efficiency\n";
+		comp.Comp_efficiency = check_valuei();
+	} while (comp.Comp_efficiency > 100);
+	cout << "Compressor station created\n";
+	return in;
+}
 
 void PrintMenu() {
 	cout << "////////////////////////////////////////\n"
@@ -39,8 +86,11 @@ void PrintMenu() {
 		<< "8) Find by filter\n"
 		<< "9) Edit\n"
 		<< "10) Delete\n"
+		<< "////////////////////////////////////////\n"
 		<< "11) Edit network\n"
 		<< "12) Topological sort\n"
+		<< "13) Print Incidence matrix\n"
+		<< "14) Delete arcs/peaks\n"
 		<< "0) Exit\n"
 		<< "////////////////////////////////////////\n";
 }
@@ -67,7 +117,7 @@ C& SelectOne(unordered_map<int,C>& c) {
 template <typename T>
 using PipeFilter = bool(*)(const CPipe& p, T param);
 template <typename T>
-vector<int> FindPipeByFilter(const unordered_map<int,CPipe>& p, PipeFilter<T> f, T param)
+vector<int> FindPipeByFilter(unordered_map<int,CPipe> p, PipeFilter<T> f, T param)
 {
 	vector<int> result;
 	int i = 0;
@@ -80,6 +130,7 @@ vector<int> FindPipeByFilter(const unordered_map<int,CPipe>& p, PipeFilter<T> f,
 	}
 	return result;
 }
+
 
 template <typename T>
 using CSFilter = bool(*)(const CCS& p, T param);
@@ -97,6 +148,7 @@ vector<int> FindCSByFilter(const unordered_map<int,CCS>& c, CSFilter<T> f, T par
 	}
 	return result;
 }
+
 
 bool CheckPipeByRepairStatus(const CPipe& p, bool repair)
 {
@@ -117,321 +169,330 @@ bool CheckCSByWorkshops(const CCS& comp, double percent)
 }
 
 int main() {
-	int size;
-	CPipe pipe;
-	CCS comp;
 	CNetwork network;
-	ofstream fout;
-	ifstream fin;
-	string line;
-	int i,j;
-	double d;
-	vector<int> foundCS;
+	/*vector<int> foundCS;
 	vector<int> foundPipes;
-	unordered_map<int, int> sorted;
 	unordered_map<int, CPipe> PipeMap;
-	unordered_map<int, CCS> CSMap;
-
-	unordered_map<int, unordered_map<int, int>>::iterator netiterator;
-
-	vector<unordered_map<int, unordered_map<int, int>>::iterator> todelete;
-
-	bool IsDeadEnd;
-
-	int maxsize = 0;
-
-	int last;
+	unordered_map<int, CCS> CSMap;*/
 
 	while (1) {
 		PrintMenu();
-		switch (InBetween(0, 12))
+		switch (InBetween(0, 14))
 		{
-		case 1: //LOAD
+		case 1: // LOAD
+		{
+			string line;
+			ifstream fin;
 			cout << "Choose savefile" << endl;
 			for (const auto& entry : directory_iterator("Saves"))
 			{
 				std::cout << entry.path().stem() << endl;
 			}
 			cin >> line;
-			fin.open("Saves/"+line+".txt", ios::in);
-			if (fin.is_open()) {
-				getline(fin, line);
-				size = stoi(line);
-				getline(fin, line);
-				CPipe::MaxID = stoi(line);
-				while (size--) {
-					pipe.load_from_file(fin);
-					PipeMap[pipe.get_id()] = pipe;
-				}
-				getline(fin, line);
-				size = stoi(line);
-				getline(fin, line);
-				CCS::MaxID = stoi(line);
-				while (size--) {
-					comp.load_from_file(fin);
-					CSMap[comp.get_id()] = comp;
-				}
-				fin.close();
-				cout << "Loaded" << endl;
-			}
-			else cout << "failed" << endl;
-
+			network.Load_from_file(line);
 			break;
+		}
 
 		case 2: // ADD PIPE
-			pipe.set_Pipe_param();
-			PipeMap[pipe.get_id()] = pipe;
-			//pipes.push_back(pipe);
+		{
+			network.Add_to_PipeMap();
 			break;
+		}
 
 		case 3: // ADD CS
-			comp.set_Compressor_param();
-			CSMap[comp.get_id()] = comp;
+		{
+			network.Add_to_CSMap();
 			break;
+		}
 
 		case 4: // REPAIR
-			SelectOne(PipeMap).change_repair();
+		{
+			network.Select_pipe().change_repair();
 			cout << "changed" << endl;
 			break;
+		}
 
-		case 5: //PRINT
+		case 5: // PRINT
+		{
 			cout << "1) Print pipe info\n2) Print CS info" << endl;
-			switch (check_valuei()) {
-			case 1:
-				cout << "Pipe info:\n\n";
-				i = 1;
-				for (auto& key : PipeMap) {
-					cout << key.first << ")\n" << key.second << endl;
-					i++;
-				}
+			switch (check_valuei())
+			{
+			case 1: // PRINT PIPE INFO
+			{
+				network.Print_PipeMap();
 				break;
-			case 2:
-				cout << "CS info:\n\n";
-				i = 1;
-				for (auto& key : CSMap) {
-					cout << key.first << ")\n" << key.second << endl;
-					i++;
-				}
+			}
+			case 2: //PRINT CS INFO
+			{
+				network.Print_CSMap();
 				break;
+			}
 			default:
+			{
 				cout << "Choose from existing commands" << endl;
 				break;
 			}
+			}
 			break;
+		}
 
-		case 6: //SAVE
+		case 6: // SAVE
+		{
+			ofstream fout;
+			string line;
 			cout << "Choose savefile name" << endl;
 			cin >> line;
-			fout.open("Saves/"+line+".txt", ios::out);
-			if (fout.is_open()) {
-				fout << PipeMap.size() << endl << CPipe::MaxID << endl;
-				for (auto& key : PipeMap) {
-					key.second.save_to_file(fout);
-				}
-				fout << CSMap.size() << endl << CCS::MaxID << endl;
-				for (auto& key : CSMap) {
-					key.second.save_to_file(fout);
-				}
-				fout.close();
-				cout << "Saved" << endl;
-			}
-
+			network.Save_to_file(line);
 			break;
+		}
 
 		case 7: // WORKSHOPS
+		{
 			cout << "1) Turn on workshop\n2) Turn off workshop" << endl;
 			switch (check_valuei()) {
-			case 1:
-				SelectOne(CSMap).add_compressor();
+			case 1: // TURN ON
+			{
+				network.Select_CS().add_compressor();
 				break;
-			case 2:
-				SelectOne(CSMap).subs_compressor();
+			}
+			case 2: // TURN OFF
+			{
+				network.Select_CS().subs_compressor();
 				break;
+			}
 			default:
+			{
 				cout << "Choose from existing commands" << endl;
 				break;
 			}
+			}
 			break;
+		}
 
 		case 8: // FIND
+		{
 			cout << "Find:\n1)Pipes\n2)Compressor Stations" << endl;
 			switch (check_valuei())
 			{
-			case 1:
+			case 1: // FIND PIPES
+			{
 				cout << "Choose filter:\n1)By name\n2)By repair status" << endl;
 				switch (check_valuei())
 				{
-				case 1:
+				case 1: // BY NAME
+				{
+					string line;
 					cout << "Enter name token:" << endl;
 					cin >> line;
-					foundPipes = FindPipeByFilter<string>(PipeMap, CheckPipeByName, line);
-					for (auto& i : foundPipes)
-					{
-						cout << i << ")\n" << PipeMap[i] << endl;
-					}
+					network.Set_subset_of_pipes(FindPipeByFilter<string>(network.Get_PipeMap(), CheckPipeByName, line));
+					network.Print_subset_of_pipes();
 					cout << "A subset of the found elements was saved" << endl;
 					break;
-				case 2:
+				}
+				case 2: // BY REPAIR STATUS
+				{
+					int i;
 					cout << "Choose status\n1)Not under repair\n2)Under repair" << endl;
-					cin >> i;
-					foundPipes = FindPipeByFilter(PipeMap, CheckPipeByRepairStatus, (bool)(i - 1));
-					for (auto& i : foundPipes)
-					{
-						cout << i << ")\n" << PipeMap[i] << endl;
-					}
+					i = InBetween(1, 2);
+					network.Set_subset_of_pipes(FindPipeByFilter(network.Get_PipeMap(), CheckPipeByRepairStatus, (bool)(i - 1)));
+					network.Print_subset_of_pipes();
 					cout << "A subset of the found elements was saved" << endl;
 					break;
+				}
 				default:
+				{
 					cout << "Choose from existing filters" << endl;
 					break;
 				}
+				}
 				break;
+			}
 
-			case 2:
+			case 2: // FIND CS
+			{
 				cout << "Choose filter:\n1)By name\n2)By percent of active workshops" << endl;
 				switch (check_valuei())
 				{
-				case 1:
+				case 1: // BY NAME
+				{
+					string line;
 					cout << "Enter name token:" << endl;
 					cin >> line;
-					foundCS = FindCSByFilter(CSMap, CheckCSByName, line);
-					for (auto& i : foundCS)
-					{
-						cout << i << ")\n" << CSMap[i] << endl;
-					}
+					network.Set_subset_of_cs(FindCSByFilter(network.Get_CSMap(), CheckCSByName, line));
+					network.Print_subset_of_CS();
 					cout << "A subset of the found elements was saved" << endl;
 					break;
-				case 2:
+				}
+				case 2: // BY ACTIVE WORKSHOPS
+				{
 					cout << "Enter minimal percent of active workshops:" << endl;
-					foundCS = FindCSByFilter(CSMap, CheckCSByWorkshops, InBetween(0.0, 100.0));
-					for (auto& i : foundCS)
-					{
-						cout << i << ")\n" << CSMap[i] << endl;
-					}
+					network.Set_subset_of_cs(FindCSByFilter(network.Get_CSMap(), CheckCSByWorkshops, InBetween(0.0, 100.0)));
+					network.Print_subset_of_CS();
 					cout << "A subset of the found elements was saved" << endl;
 					break;
+				}
 				default:
+				{
 					cout << "Choose from existing filters" << endl;
 					break;
 				}
 				break;
+				}
+				break;
+			}
 
 			default:
+			{
 				cout << "Choose from existing commands" << endl;
 				break;
 			}
+			}
 			break;
+		}
 
 		case 9: // EDIT
+		{
 			cout << "What do you want to edit? \n1)Pipes\n2)Compressor Stations" << endl;
 			switch (check_valuei())
 			{
-			case 1:
+			case 1: // EDIT PIPES
+			{
 				cout << "Do you want to edit elements from current subset?\n1)Yes\n2)No" << endl;
 				switch (check_valuei())
 				{
-				case 1:
-					for (auto& i : foundPipes)
-					{
-						cout << i << ")\n" << PipeMap[i] << endl;
-						PipeMap[i].change_Pipe_param();
-						cout << i << ") New:\n" << PipeMap[i] << endl;
-					}
+				case 1: // FROM SUBSET
+				{
+					network.Edit_subset_of_pipes();
 					break;
-				case 2:
-					cout << "Write the numbers of elements you want to edit. Type 0 to stop\n";
-					while (PipeMap.find(i=check_valuei())!=PipeMap.end())
-					{
-						cout << i << ")\n" << PipeMap[i] << endl;
-						PipeMap[i].change_Pipe_param();
-						cout << i << ") New:\n" << PipeMap[i] << endl;
-					}
+				}
+				case 2: // BY PICK
+				{
+					cout << "Write the numbers of element you want to edit. Type -1 to stop\n";
+					network.PipeMap_edit();
 					break;
+				}
 				default:
+				{
 					cout << "Choose from existing commands" << endl;
 					break;
 				}
+				}
 				break;
-
-			case 2:
+			}
+			case 2: // EDIT CS
+			{
 				cout << "Do you want to edit elements from current subset?\n1)Yes\n2)No" << endl;
 				switch (check_valuei())
 				{
-				case 1:
-					for (auto& i : foundCS)
-					{
-						cout << i + 1 << ")\n" << CSMap[i] << endl;
-						CSMap[i].change_cs_param();
-						cout << i + 1 << ") New:\n" << CSMap[i] << endl;
-					}
+				case 1: // FROM SUBSET
+				{
+					network.Edit_subset_of_cs(); 
 					break;
-				case 2:
-					cout << "Write the numbers of elements you want to edit. Type 0 to stop" << endl;
-					while (CSMap.find(i = check_valuei()) != CSMap.end())
-					{
-						cout << i << ")\n" << CSMap[i] << endl;
-						CSMap[i].change_cs_param();
-						cout << i << ") New:\n" << CSMap[i] << endl; 
-					}
+				}
+				case 2: // BY PICK
+				{
+					cout << "Write the numbers of elements you want to edit. Type -1 to stop" << endl;
+					network.CSMap_edit();
+					break;
+				}
 
 				default:
+				{
 					cout << "Choose from existing commands" << endl;
 					break;
 				}
-				
+				}
 				break;
-
+			}
 			default:
+			{
 				cout << "Choose from existing commands" << endl;
 				break;
 			}
+			}
 			break;
+		}
 
-		case 10: // DELETE
+		case 10:// DELETE
+		{
 			cout << "What do you want to delete? \n1)Pipes\n2)Compressor Stations" << endl;
 			switch (check_valuei())
 			{
+			case 1: // DELETE PIPES
+			{
+				cout << "Type id of elements you want to delete (Type '-1' to finish)" << endl;
+				network.Pipe_erase();
+				break;
+			}
+			case 2: // DELETE CS
+			{
+				cout << "Type id of elements you want to delete (Type '-1' to finish)" << endl;
+				network.CS_erase();
+				break;
+			}
+			default:
+			{
+				break;
+			}
+			}
+			break;
+		}
+
+		case 11:// EDIT NETWORK
+		{
+			network.AddPath();
+			network.PrintIncidence();
+
+			break;
+		}
+
+		case 12:// TOPOLOGICAL SORT
+		{
+			for (auto& i : network.TopologicalSort())
+				cout << i.first << ")" << i.second << " ";
+			cout << endl;
+			break;
+		}
+
+		case 13:// PRINT GRAPH
+		{
+			network.PrintIncidence();
+			cout << endl;
+			network.PrintAdjacency();
+			break;
+		}
+		case 14:
+			cout << "What do you want to delete?\n1)Arcs\n2)Peaks\n";
+			switch (InBetween(-1,2))
+			{
 			case 1:
-				cout << "Type id of element you want to delete (Type '-1' to finish)" << endl;
-				while (PipeMap.find(i = InBetween(-1,INT_MAX)) != PipeMap.end())
-				{
-					PipeMap.erase(PipeMap.find(i));
-					cout << "Deleted" << endl;
-				}
+			{
+				cout << "Type id of elements you want to delete (Type '-1' to finish)" << endl;
+				network.Delete_arc();
 				break;
+			}
 			case 2:
-				cout << "Type id of element you want to delete (Type '-1' to finish)" << endl;
-				while (CSMap.find(i = InBetween(-1, INT_MAX)) != CSMap.end())
-				{
-					CSMap.erase(CSMap.find(i));
-					cout << "Deleted" << endl;
-				}
+			{
+				cout << "Type id of elements you want to delete (Type '-1' to finish)" << endl;
+				network.Delete_peak();
 				break;
+			}
 			default:
 				break;
 			}
 			break;
 
-		case 11: //EDIT NETWORK
-			network.AddPath(PipeMap, CSMap);
-			network.PrintIncidence();
-
-			break;
-
-		case 12:
-			sorted = network.TopologicalSort();
-			for (auto& i : sorted)
-				cout << i.first << ")" << i.second << " ";
-			cout << endl;
-			break;
-
 		case 0: // EXIT
+		{
 			return 0;
 			break;
+		}
 
 		default:
+		{
 			cout << "Choose from existing commands" << endl;
 			break;
+		}
 		}
 		cout << "_____________________________________________" << endl;
 	}

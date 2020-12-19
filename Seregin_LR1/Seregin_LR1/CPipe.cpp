@@ -28,7 +28,7 @@ void CPipe::change_repair()
 
 void CPipe::save_to_file(ofstream& fout)
 {
-	fout <<Pipe_name << "\n" << Pipe_id << " " << Pipe_diameter << " " << Pipe_length << " " << Is_under_repair << endl;
+	fout <<Pipe_name << "\n" << Pipe_id << " " << Pipe_diameter << " " << Pipe_length << " " << Is_under_repair << " " << ends.first << " " << ends.second <<  endl;
 }
 
 void CPipe::load_from_file(ifstream& fin)
@@ -38,33 +38,9 @@ void CPipe::load_from_file(ifstream& fin)
 	Pipe_name = line;
 	getline(fin, line);
 	istringstream iss(line);
-	iss >> Pipe_id >> Pipe_diameter >> Pipe_length >> Is_under_repair;
+	iss >> Pipe_id >> Pipe_diameter >> Pipe_length >> Is_under_repair >> ends.first >> ends.second;
 }
 
-void CPipe::set_Pipe_param()
-{
-	int repair;
-	string str;
-	//cout << "Insert id\n";
-	Pipe_id = MaxID++;
-	cout << "Insert Name\n";
-	cin.ignore();
-	getline(cin, str);
-	if (str == "") Pipe_name = "nameless";
-	else Pipe_name = str;
-	cout << "Insert D\n";
-	Pipe_diameter = check_valuei();
-	cout << "Insert l\n";
-	Pipe_length = check_valued();
-	cout << "Is pipe under repair?\n1.yes\n2.no\n(default - no)\n";
-	repair = check_valuei();
-	if (repair == 1) {
-		Is_under_repair = true;
-	}
-	else Is_under_repair = false;
-
-	cout << "Pipe created\n";
-}
 
 void CPipe::change_Pipe_param()
 {
@@ -90,4 +66,25 @@ void CPipe::change_Pipe_param()
 int CPipe::get_id()
 {
 	return Pipe_id;
+}
+
+void CPipe::setMaxID(int i)
+{
+	CPipe::MaxID = i;
+}
+
+int CPipe::getMaxID()
+{
+	return CPipe::MaxID;
+}
+
+void CPipe::Set_ends(int s, int f)
+{
+	ends.first = s;
+	ends.second = f;
+}
+
+pair<int, int> CPipe::Get_ends()
+{
+	return ends;
 }
