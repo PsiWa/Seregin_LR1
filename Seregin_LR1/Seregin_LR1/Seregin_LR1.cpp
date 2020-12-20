@@ -19,7 +19,6 @@ ostream& operator<< (ostream& out, const CPipe& pipe) {
 	out << "Pipe length is " << pipe.Pipe_length << endl << (pipe.Is_under_repair ? "!Pipe is under repair!" : "Pipe is not under repair") << endl;
 	return out;
 }
-
 istream& operator>> (istream& in, CPipe& pipe)
 {
 	int repair;
@@ -50,7 +49,6 @@ ostream& operator<< (ostream& out, const CCS& comp) {
 	out << comp.Comp_inwork << " of them are operating\n" << "Efficiency is " << comp.Comp_efficiency << "%\n";
 	return out;
 }
-
 istream& operator>> (istream& in, CCS& comp)
 {
 	string str;
@@ -91,6 +89,8 @@ void PrintMenu() {
 		<< "12) Topological sort\n"
 		<< "13) Print Incidence matrix\n"
 		<< "14) Delete arcs/peaks\n"
+		<< "15) Find Min Path\n"
+		<< "16) Find Max Flow\n"
 		<< "0) Exit\n"
 		<< "////////////////////////////////////////\n";
 }
@@ -170,14 +170,10 @@ bool CheckCSByWorkshops(const CCS& comp, double percent)
 
 int main() {
 	CNetwork network;
-	/*vector<int> foundCS;
-	vector<int> foundPipes;
-	unordered_map<int, CPipe> PipeMap;
-	unordered_map<int, CCS> CSMap;*/
 
 	while (1) {
 		PrintMenu();
-		switch (InBetween(0, 14))
+		switch (InBetween(0, 16))
 		{
 		case 1: // LOAD
 		{
@@ -461,7 +457,7 @@ int main() {
 			network.PrintAdjacency();
 			break;
 		}
-		case 14:
+		case 14: // DELETE PEAKS/ARCS
 			cout << "What do you want to delete?\n1)Arcs\n2)Peaks\n";
 			switch (InBetween(-1,2))
 			{
@@ -482,6 +478,24 @@ int main() {
 			}
 			break;
 
+		case 15:
+		{
+			cout << "Enter start point:\n";
+			int start = network.Selecr_peak();
+			cout << "Enter finish point:\n";
+			int finish = network.Selecr_peak();
+			network.MinPath(start, finish);
+			break;
+		}
+		case 16:
+		{
+			cout << "Enter start point:\n";
+			int start = network.Selecr_peak();
+			cout << "Enter finish point:\n";
+			int finish = network.Selecr_peak();
+			cout << network.Max_flow(start, finish) << endl;
+			break;
+		}
 		case 0: // EXIT
 		{
 			return 0;

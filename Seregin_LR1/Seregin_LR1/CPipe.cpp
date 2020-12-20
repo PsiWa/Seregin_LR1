@@ -88,3 +88,21 @@ pair<int, int> CPipe::Get_ends()
 {
 	return ends;
 }
+
+int CPipe::Get_weight()
+{
+	int i;
+	if (Is_under_repair)
+		return INT_MAX;
+	else
+		return i = round(1/(sqrt(pow(Pipe_diameter/1000.0, 5)/ Pipe_length)));
+}
+
+int CPipe::Get_productivity()
+{
+	int d;
+	if (Is_under_repair)
+		return 0;
+	else
+		return d = round((sqrt(pow(Pipe_diameter / 1000.0, 5) / Pipe_length))*pow(10,5));
+}

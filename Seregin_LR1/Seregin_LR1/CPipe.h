@@ -17,8 +17,6 @@ private:
 	bool Is_under_repair;
 	string Pipe_name;
 	pair <int, int> ends = {-1,-1};
-	//int Line_start;
-	//int Line_end;
 
 public:
 	CPipe();
@@ -36,5 +34,7 @@ public:
 	static int getMaxID();
 	void Set_ends(int s, int f);
 	pair <int, int> Get_ends();
+	int Get_weight();
+	int Get_productivity();
 };
 

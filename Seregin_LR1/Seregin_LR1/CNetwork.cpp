@@ -83,7 +83,6 @@ CPipe& CNetwork::Select_pipe()
 			else
 			{
 				cout << "Element was not found" << endl;
-				break;
 			}
 		}
 	}
@@ -107,7 +106,6 @@ CCS& CNetwork::Select_CS()
 				else
 				{
 					cout << "Element was not found" << endl;
-					break;
 				}
 			}
 		}
@@ -341,10 +339,16 @@ void CNetwork::PrintIncidence()
 
 unordered_map<int, unordered_map<int, int>> CNetwork::Make_Adjacency()
 {
-	unordered_map<int, unordered_map<int, int>> Adjacency;
+	/*unordered_map<int, unordered_map<int, int>> Adjacency;
 	for (auto& i : idofarcs)
 	{
 		Adjacency[PipeMap[i].Get_ends().first][PipeMap[i].Get_ends().second] = 1;
+	}
+	return Adjacency;*/
+	unordered_map<int, unordered_map<int, int>> Adjacency;
+	for (auto& i : idofarcs)
+	{
+		Adjacency[PipeMap[i].Get_ends().first][PipeMap[i].Get_ends().second] = PipeMap[i].Get_productivity();
 	}
 	return Adjacency;
 }
@@ -423,6 +427,115 @@ unordered_map<int, int> CNetwork::TopologicalSort()
 	for (auto& i : copyofpeaks)
 		sort[number--] = i;
 	return sort;
+}
+
+int CNetwork::Selecr_peak()
+{
+	while (1)
+	{
+		auto iter = idofpeaks.begin();
+		if ((iter = find(idofpeaks.begin(), idofpeaks.end(), check_valuei())) != idofpeaks.end())
+			return *iter;
+		else
+		{
+			cout << "Element was not found" << endl;
+		}
+	}
+}
+
+void CNetwork::MinPath(int start, int finish)
+{
+	int k;
+	unordered_map<int,int> d;
+	list<int>::iterator begin = idofpeaks.begin();
+	d[start] = 0;
+	for (auto& i : idofpeaks)
+	{
+		if (i != start)
+		{
+			d[i] = 2000000000;
+		}
+	}
+	for (int i = 0; i < idofpeaks.size(); i++)
+	{
+		for (auto& j : idofarcs)
+		{
+			if (d[PipeMap[j].Get_ends().second] > (k = d[PipeMap[j].Get_ends().first] + PipeMap[j].Get_weight()))
+				d[PipeMap[j].Get_ends().second] = k;
+		}
+	}
+	for (auto& i : d)
+		cout << i.first << ")" << i.second << " ";
+	cout << endl;
+	if (d[finish] != 2000000000)
+	{
+		while (finish != start)
+		{
+			for (auto& i : idofarcs)
+			{
+				if (d[finish] - PipeMap[i].Get_weight() == d[PipeMap[i].Get_ends().first])
+				{
+					cout << "(" << finish << ") <--(" << PipeMap[i].Get_weight() << ")-- ";
+					finish = PipeMap[i].Get_ends().first;
+				}
+			}
+		}
+		cout << "(" << finish << ")" << endl;
+	}
+	else
+		cout << "There is no way" << endl;
+}
+
+bool CNetwork::bfs(unordered_map<int, unordered_map<int, int>> adjency, int s, int t, unordered_map<int, int>& G)
+{
+	unordered_map<int, bool> visited;
+	for (auto& i : idofpeaks)
+		visited[i] = false;
+	queue<int> q;
+	q.push(s);
+	visited[s] = true;
+	G[s] = -1;
+
+	while (!q.empty())
+	{
+		int u = q.front();
+		q.pop();
+		for (auto& v : idofpeaks)
+		{
+			if (visited[v] == false && adjency[u][v] > 0)
+			{
+				q.push(v);
+				G[v] = u;
+				visited[v] = true;
+			}
+		}
+	}
+	return (visited[t] == true);
+}
+
+int CNetwork::Max_flow(int start,int finish)
+{
+	unordered_map<int, unordered_map<int, int>> adjency = this->Make_Adjacency();
+	int u, v;
+	unordered_map<int, int> G;
+	int max_flow = 0;
+	while (bfs(adjency, start, finish, G))
+	{
+		int path_flow = INT_MAX;
+		for (v = finish; v != start; v = G[v])
+		{
+			u = G[v];
+			path_flow = min(path_flow, adjency[u][v]);
+		}
+		for (v = finish; v != start; v = G[v])
+		{
+			u = G[v];
+			adjency[u][v] -= path_flow;
+			adjency[v][u] += path_flow;
+		}
+		max_flow += path_flow;
+	}
+	return max_flow;
 }
 
 

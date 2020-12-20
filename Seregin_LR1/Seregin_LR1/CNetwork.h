@@ -2,10 +2,12 @@
 #include <iostream>
 #include <list>
 #include <unordered_map>
+#include <unordered_set>
 #include "CPipe.h"
 #include "CCS.h"
 #include "Check_value.h"
 #include <iterator>
+#include <queue>
 using namespace std;
 
 class CNetwork
@@ -60,4 +62,10 @@ public:
 	void PrintAdjacency();
 	bool Cycle_check(int i);
 	unordered_map<int, int> TopologicalSort();
+
+	int Selecr_peak();
+
+	void MinPath(int start, int finish);
+	bool bfs(unordered_map<int, unordered_map<int, int>> adjency, int s, int t, unordered_map<int, int>& parent);
+	int Max_flow(int start, int finish);
 };
